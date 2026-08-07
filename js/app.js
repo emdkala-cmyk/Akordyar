@@ -8592,6 +8592,18 @@ if (edCur && edSelectedChords.length > 0 && !isEdChordModalOpen) {
         }
         if (parsedResult.keyMode === 'min') edCur.keyMode = 'min';
       }
+      // ذخیره گام اورجینال از استخراج لامینور
+      if (parsed.key) {
+        const origKeyWithoutMode = parsed.key.replace(/m$/, '');
+        if (typeof ED_NOTES !== 'undefined' && ED_NOTES.includes(origKeyWithoutMode)) {
+          edCur.originalKey = origKeyWithoutMode;
+        }
+        if (parsed.key.endsWith('m')) {
+          edCur.originalKeyMode = 'min';
+        } else {
+          edCur.originalKeyMode = 'maj';
+        }
+      }
       if (parsedResult.timeSignature) edCur.timeSignature = parsedResult.timeSignature;
 
       DAW.clips = DAW.clips.filter(c => c.type !== 'chord');

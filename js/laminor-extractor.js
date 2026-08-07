@@ -866,7 +866,8 @@ function normalizeLaminorKey(rawText) {
 
   // استخراج ریشه‌ی نت به همراه علامت نیم‌پرده (♯/♭/#/b) و نوع (m ، min ، M ، maj)
   // بین ریشه و نوع ممکن است فاصله باشد: «D minor» ، «C# major»
-  const m = cleaned.match(/^([A-Ha-h])([#b♯♭]?)\s*(maj|min|m|M|major|minor)?/);
+  // نکته: alternatives باید به ترتیب باشند تا major/minor قبل از m/M چک شوند
+  const m = cleaned.match(/^([A-Ha-h])([#b♯♭]?)\s*(major|minor|maj|min|m|M)?/);
   if (!m) return '';
 
   let root = m[1].toUpperCase();
