@@ -8586,10 +8586,21 @@ if (edCur && edSelectedChords.length > 0 && !isEdChordModalOpen) {
       if (parsedResult.artist) edCur.artist = parsedResult.artist;
       if (parsedResult.key) {
         const cleanKey = parsedResult.key.replace('m', '');
-        if (typeof ED_NOTES !== 'undefined' && ED_NOTES.includes(cleanKey)) edCur.key = cleanKey;
-        if (parsedResult.keyMode === 'min') edCur.keyMode = 'min';
+        if (typeof ED_NOTES !== 'undefined' && ED_NOTES.includes(cleanKey)) {
+          edCur.key = cleanKey;
+          edCur.originalKey = cleanKey; // ذخیره گام اورجینال
+        }
+        if (parsedResult.keyMode === 'min') {
+          edCur.keyMode = 'min';
+          edCur.originalKeyMode = 'min'; // ذخیره مود اورجینال
+        }
       }
       if (parsedResult.timeSignature) edCur.timeSignature = parsedResult.timeSignature;
+      
+      // Initialize baseChordNames from imported chords (اورجینال آکوردها برای ترنسپوز)
+      if (!edCur.baseChordNames || !edCur.baseChordNames.length) {
+        edCur.baseChordNames = edCur.chords.map(ch => ch.name || '');
+      }
 
       DAW.clips = DAW.clips.filter(c => c.type !== 'chord');
 
