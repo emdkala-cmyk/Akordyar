@@ -1,1 +1,3 @@
-node_modules/ 
+(js/sharedEngine.js is a source file, so no changes needed to .gitignore)
+
+(empty)

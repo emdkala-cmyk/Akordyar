@@ -178,7 +178,11 @@ const SharedEngine = (() => {
       return part.replace(/^([A-G][b#]?)/, (match, root) => {
         if (!(root in NOTE_MAP)) return root;
         const idx = (NOTE_MAP[root] + ((semi % 12) + 12) % 12) % 12;
-        return (root.includes('#') || root.includes('b')) && FLAT[idx] ? FLAT[idx] : SHARP[idx];
+        // اگر ریشه بمل بود یا شاخص در لیست بمل‌ها بود و ریشه طبیعی بود، از بمل استفاده کن
+        if (root.includes('b')) return FLAT[idx] || SHARP[idx];
+        if (root.includes('#')) return SHARP[idx];
+        // برای نت‌های طبیعی، اگر اندیس متناظر با بمل باشد، بمل برگردان
+        return FLAT[idx] || SHARP[idx];
       });
     }).join('/');
   }
