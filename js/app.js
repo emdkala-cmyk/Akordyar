@@ -8585,8 +8585,11 @@ if (edCur && edSelectedChords.length > 0 && !isEdChordModalOpen) {
       if (parsedResult.title) edCur.title = parsedResult.title;
       if (parsedResult.artist) edCur.artist = parsedResult.artist;
       if (parsedResult.key) {
-        const cleanKey = parsedResult.key.replace('m', '');
-        if (typeof ED_NOTES !== 'undefined' && ED_NOTES.includes(cleanKey)) edCur.key = cleanKey;
+        // پشتیبانی از گام‌های دیز و بمل (مثل G#، Ab)
+        const keyWithoutMode = parsedResult.key.replace(/m$/, '');
+        if (typeof ED_NOTES !== 'undefined' && ED_NOTES.includes(keyWithoutMode)) {
+          edCur.key = keyWithoutMode;
+        }
         if (parsedResult.keyMode === 'min') edCur.keyMode = 'min';
       }
       if (parsedResult.timeSignature) edCur.timeSignature = parsedResult.timeSignature;
