@@ -8580,6 +8580,10 @@ if (edCur && edSelectedChords.length > 0 && !isEdChordModalOpen) {
       if (!edCur) edCur = edBlankSong();
       edCur.lyrics = parsedResult.lyrics;
       edCur.chords = parsedResult.chords;
+      // Initialize baseChordNames from extracted chords (critical for transpose)
+      if (!edCur.baseChordNames || !edCur.baseChordNames.length) {
+        edCur.baseChordNames = parsedResult.chords.map(ch => ch.name || '');
+      }
 
       // --- Apply metadata ---
       if (parsedResult.title) edCur.title = parsedResult.title;
