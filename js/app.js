@@ -4904,6 +4904,7 @@ let syncTapKeyHandler = null;
     if ($('edClUndo')) $('edClUndo').onclick = edClUndoMarker;
     if ($('edClClear')) $('edClClear').onclick = edClClearMarkers;
     if ($('edClApply')) $('edClApply').onclick = edClApplyMarkers;
+    if ($('edSyncChordLineBtn')) $('edSyncChordLineBtn').onclick = edSyncChordLineFromLyrics;
     edUpdateClCount();
 
     // Editor click for seq mode point placement
