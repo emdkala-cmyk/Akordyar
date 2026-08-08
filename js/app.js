@@ -3340,6 +3340,48 @@ sels.forEach(c => {
       if (!_chordLinePopup) { toast(t('popupBlocked')); return; }
       syncChordLinePopup();
     }
+    
+    // Manual sync function: sync Chord Line from Lyrics Chord (user-initiated only)
+    function syncChordLineFromLyrics() {
+      if (!edCur) return;
+      // Build chordLineClips from edCur.chords (the source from Lyrics Chord import/edit)
+      const lines = (edCur.lyrics || '').split('\n');
+      edCur.chordLineClips = [];
+      
+      // Group chords by line index
+      const chordsByLine = {};
+      (edCur.chords || []).forEach(ch => {
+        if (!chordsByLine[ch.lineIndex]) chordsByLine[ch.lineIndex] = [];
+        chordsByLine[ch.lineIndex].push(ch);
+      });
+      
+      // Create clip objects for each line that has chords
+      lines.forEach((line, lineIdx) => {
+        const lineChords = chordsByLine[lineIdx] || [];
+        if (lineChords.length > 0) {
+          // Sort chords by charIndex for proper LTR rendering
+          lineChords.sort((a, b) => a.charIndex - b.charIndex);
+          edCur.chordLineClips.push({
+            lineIndex: lineIdx,
+            lineText: line,
+            chords: lineChords.map(ch => ({
+              charIndex: ch.charIndex,
+              anchorType: ch.anchorType,
+              name: ch.name || ''
+            }))
+          });
+        }
+      });
+      
+      edCur.hasManualChordLineEdits = false; // Reset manual edit flag after sync
+      edSaveSong();
+      
+      // Refresh the popup if open
+      syncChordLinePopup();
+      
+      toast('کورد لاین بروز شد');
+    }
+    
     function syncChordLinePopup() {
       if (!_chordLinePopup || _chordLinePopup.closed) return;
       if (!edCur) return;
@@ -3357,7 +3399,30 @@ sels.forEach(c => {
       const cColor = edCur.styles?.cColor || '#e6aa28';
       const cFont = edCur.styles?.cFont || 'JetBrains Mono';
       const lines = (edCur.lyrics || '').split('\n');
-      const chords = edCur.chords.map(ch => ({ lineIndex: ch.lineIndex, charIndex: ch.charIndex, anchorType: ch.anchorType, _name: edTransposeChord(ch.name, transpose) }));
+      
+      // Use chordLineClips if available and has data, otherwise fall back to edCur.chords
+      let chordsToRender = [];
+      if (edCur.chordLineClips && edCur.chordLineClips.length > 0 && !edCur.hasManualChordLineEdits) {
+        // Use synced chordLineClips data
+        edCur.chordLineClips.forEach(clip => {
+          clip.chords.forEach(ch => {
+            chordsToRender.push({
+              lineIndex: clip.lineIndex,
+              charIndex: ch.charIndex,
+              anchorType: ch.anchorType,
+              _name: edTransposeChord(ch.name, transpose)
+            });
+          });
+        });
+      } else {
+        // Fall back to edCur.chords (default behavior or after manual edits)
+        chordsToRender = edCur.chords.map(ch => ({
+          lineIndex: ch.lineIndex,
+          charIndex: ch.charIndex,
+          anchorType: ch.anchorType,
+          _name: edTransposeChord(ch.name, transpose)
+        }));
+      }
 
       doc.title = title + ' — ' + artist + ' | Chord Line';
       doc.documentElement.dir = 'rtl';
@@ -15358,6 +15423,7 @@ ${printContainer.innerHTML}
 
 // expose to global scope
 window.printSong = printSong;
+window.syncChordLineFromLyrics = syncChordLineFromLyrics;
 
 // ===== Quick Search Panel Functions =====
 let _quickSearchDragging = false;
