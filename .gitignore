@@ -1,3 +1,2 @@
-(js/app.js is just a source file modification, no build artifacts, dependencies, or temp files in the changes)
-
-(empty - no output)
+node_modules/
+**/node_modules/
