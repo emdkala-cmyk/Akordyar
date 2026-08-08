@@ -247,8 +247,8 @@ globalScope.DAW = {
       document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { const k = el.getAttribute('data-i18n-placeholder'); if (k) el.placeholder = t(k); });
       document.documentElement.dir = currentLang === 'fa' ? 'rtl' : 'ltr';
       document.documentElement.lang = currentLang;
-      // Update dynamic elements
-      if ($('edPrintTitle')) $('edPrintTitle').textContent = edCur?.title || t('untitled');
+      // Update dynamic elements - use safe access since edCur may not be initialized yet
+      try { if ($('edPrintTitle')) $('edPrintTitle').textContent = (typeof edCur !== 'undefined' && edCur) ? (edCur.title || '') : t('untitled'); } catch(e) {}
       const syncPlayBtn = $('syncPlayBtn');
       if (syncPlayBtn) syncPlayBtn.textContent = DAW.isPlaying ? t('syncPause') : t('syncPlay');
     }
